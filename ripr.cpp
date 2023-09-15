@@ -20,11 +20,42 @@ std::string stringifyCharv(char input[]) {
 std::vector<std::string> findKey(std::vector<std::string> data, std::string key) {
 	std::vector<std::string> keyList;
 
-	for(int i = 0; i < data.size(); ++i) {
-		std::cout<<data[i]<<std::endl;
+	for(int i = 0; i < data.size(); i++) {
+		std::string line = data[i];
+		for(int j = 0; j < line.size(); j++) {
+			if (line[j] == key[0]) {
+				bool found = true;
+				for(int k = 1; k < key.size(); k++) {
+					if (line[j+k] != key[k]) {
+						found = false;
+						break;
+					}
+				}
+				if (found) {
+					if (DEFAULT_CONFIG['f']) {
+						if (j == 0) {
+							if (line[j+key.size()] == ' ' || line[j+key.size()] == '\0') {
+								keyList.push_back(line);
+							}
+						}
+						else if (line[j-1] == ' ') {
+							if (line[j+key.size()] == ' ' || line[j+key.size()] == '\0') {
+								keyList.push_back(line);
+							}
+						}
+					}
+					else {
+						keyList.push_back(line);
+					}
+					if (!DEFAULT_CONFIG['a']) {
+						goto theEnd;
+					}
+				}
+			}
+		}
 	}
-
-	return keyList;
+	theEnd:
+		return keyList;
 }
 
 std::vector<std::string> readFile(std::string filename) {
@@ -62,6 +93,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::vector<std::string> data = readFile(argv[1]);
+	std::vector<std::string> result;
+	
 	if (argc < 3) {
 		std::cout << "Enter key!"<<std::endl;
 		return 0;
@@ -72,11 +105,15 @@ int main(int argc, char* argv[]) {
 			std::cout<< "Enter Key!"<<std::endl;
 		}
 		else {
-			findKey(data, stringifyCharv(argv[3]));
+			result = findKey(data, stringifyCharv(argv[3]));
 		}
 	}
 	else {
-		findKey(data, stringifyCharv(argv[2]));
+		result = findKey(data, stringifyCharv(argv[2]));
 	}
 
+	// print result
+	for(int i = 0; i < result.size(); i++) {
+		std::cout<<result[i]<<std::endl;
+	}
 }
